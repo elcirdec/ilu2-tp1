@@ -27,16 +27,20 @@ public class Etal {
 
 	public String libererEtal() {
 		etalOccupe = false;
-		StringBuilder chaine = new StringBuilder(
-				"Le vendeur " + vendeur.getNom() + " quitte son étal, ");
-		int produitVendu = quantiteDebutMarche - quantite;
-		if (produitVendu > 0) {
-			chaine.append(
-					"il a vendu " + produitVendu + " parmi " + produit + ".\n");
-		} else {
-			chaine.append("il n'a malheureusement rien vendu.\n");
+		try {
+			StringBuilder chaine = new StringBuilder(
+					"Le vendeur " + vendeur.getNom() + " quitte son étal, ");
+			int produitVendu = quantiteDebutMarche - quantite;
+			if (produitVendu > 0) {
+				chaine.append(
+						"il a vendu " + produitVendu + " parmi " + produit + ".\n");
+			} else {
+				chaine.append("il n'a malheureusement rien vendu.\n");
+			}
+			return chaine.toString();
+		}catch(NullPointerException e) {
+			return "Le pointeur est null";
 		}
-		return chaine.toString();
 	}
 
 	public String afficherEtal() {
@@ -47,9 +51,15 @@ public class Etal {
 		return "L'étal est libre";
 	}
 
-	public String acheterProduit(int quantiteAcheter, Gaulois acheteur) {
-		if (etalOccupe) {
-			StringBuilder chaine = new StringBuilder();
+	public String acheterProduit(int quantiteAcheter, Gaulois acheteur) throws IllegalArgumentException,IllegalStateException{
+		if(quantiteAcheter<1) {
+			throw new IllegalArgumentException("La quantité acheter doit etre strictement supérieur a 0");
+		}
+		if(!isEtalOccupe()) {
+			throw new IllegalStateException("Etal non occupé");
+		}
+		StringBuilder chaine = new StringBuilder();
+		try {
 			chaine.append(acheteur.getNom() + " veut acheter " + quantiteAcheter
 					+ " " + produit + " à " + vendeur.getNom());
 			if (quantite == 0) {
@@ -66,12 +76,14 @@ public class Etal {
 			if (quantite != 0) {
 				quantite -= quantiteAcheter;
 				chaine.append(". " + acheteur.getNom()
-						+ ", est ravi de tout trouver sur l'étal de "
-						+ vendeur.getNom() + "\n");
+				+ ", est ravi de tout trouver sur l'étal de "
+				+ vendeur.getNom() + "\n");
 			}
-			return chaine.toString();
+		}catch(NullPointerException e) {
+			e.printStackTrace();
 		}
-		return null;
+		return chaine.toString();
+
 	}
 
 	public boolean contientProduit(String produit) {
